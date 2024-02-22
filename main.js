@@ -30,9 +30,12 @@ app.post("/add-users", async (req, res) => {
     const worksheet =
       workbook.getWorksheet("Participants") ||
       workbook.addWorksheet("Participants");
-    worksheet
-      .addRow([username, phone, messenger, ...Object.values(answers)])
-      .commit();
+    worksheet.addRow([
+      username,
+      phone,
+      messenger,
+      ...Object.values(answers),
+    ]).alignment = { wrapText: true }.commit();
 
     for (let i = 0; i < COLUMNS_COUNT; i++) {
       worksheet.getColumn(i + 1).width = 25;
@@ -40,12 +43,14 @@ app.post("/add-users", async (req, res) => {
 
     await workbook.xlsx.writeFile(filePath);
 
-    res.download(filePath, "updatedFile.xlsx", (err) => {
-      if (err) {
-        console.error("Ошибка при отправке файла:", err);
-        res.status(500).send("Ошибка при отправке файла");
-      }
-    });
+    // res.download(filePath, "updatedFile.xlsx", (err) => {
+    //   if (err) {
+    //     console.error("Ошибка при отправке файла:", err);
+    //     res.status(500).send("Ошибка при отправке файла");
+    //   } else {
+    //
+    //   }
+    // });
 
     res.status(200).sendFile(filePath, { root: path.resolve() });
   } catch (e) {
