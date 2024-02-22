@@ -21,7 +21,7 @@ const httpsOptions = {
 app.post("/add-users", async (req, res) => {
   const filePath = "Participants.xlsx";
   const workbook = new Excel.Workbook();
-  const { name, phone, messenger, answers } = req.body;
+  const { username, phone, messenger, answers } = req.body;
 
   console.log(req.body, "req.body");
 
@@ -31,7 +31,7 @@ app.post("/add-users", async (req, res) => {
       workbook.getWorksheet("Participants") ||
       workbook.addWorksheet("Participants");
     worksheet
-      .addRow([name, phone, messenger, ...Object.values(answers)])
+      .addRow([username, phone, messenger, ...Object.values(answers)])
       .commit();
 
     for (let i = 0; i < COLUMNS_COUNT; i++) {
