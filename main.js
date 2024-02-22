@@ -30,12 +30,17 @@ app.post("/add-users", async (req, res) => {
     const worksheet =
       workbook.getWorksheet("Participants") ||
       workbook.addWorksheet("Participants");
-    worksheet.addRow([
-      username,
-      phone,
-      messenger,
-      ...Object.values(answers),
-    ]).alignment = { wrapText: true }.commit();
+    worksheet
+      .addRow([username, phone, messenger, ...Object.values(answers)])
+      .commit();
+
+    for (let i = 4; i <= 11; i++) {
+      worksheet
+        .getColumn(i)
+        .eachCell({ includeEmpty: true }, (cell, rowNumber) => {
+          cell.alignment = { wrapText: true };
+        });
+    }
 
     for (let i = 0; i < COLUMNS_COUNT; i++) {
       worksheet.getColumn(i + 1).width = 25;
