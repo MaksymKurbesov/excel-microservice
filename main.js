@@ -47,8 +47,7 @@ app.post("/add-users", async (req, res) => {
       }
     });
 
-    res.sendFile(filePath, { root: path.resolve() });
-    res.status(200).json({ message: "Пользователь добавлен" });
+    res.status(200).sendFile(filePath, { root: path.resolve() });
   } catch (e) {
     console.log(e, "error");
   }
