@@ -43,7 +43,7 @@ app.post("/add-users", async (req, res) => {
     }
 
     for (let i = 0; i < COLUMNS_COUNT; i++) {
-      worksheet.getColumn(i + 1).width = 25;
+      worksheet.getColumn(i + 1).width = 20;
     }
 
     await workbook.xlsx.writeFile(filePath);
