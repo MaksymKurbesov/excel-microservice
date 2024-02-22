@@ -6,6 +6,8 @@ import fs from "fs";
 import { dirname } from "path";
 import https from "https";
 
+const COLUMNS_COUNT = 11;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -16,17 +18,28 @@ const httpsOptions = {
   ca: fs.readFileSync("ssl/apate.ca-bundle"),
 };
 
-app.get("/add-users", async (req, res) => {
+app.post("/add-users", async (req, res) => {
+  const filePath = "Participants.xlsx";
   const workbook = new Excel.Workbook();
-  const sheet = workbook.addWorksheet("Participants");
+  const { username, phone, messenger, answers } = req.body;
 
-  sheet.getCell(`A1`).value = `test`;
+  try {
+    await workbook.xlsx.readFile(filePath);
+    const worksheet =
+      workbook.getWorksheet("Participants") ||
+      workbook.addWorksheet("Participants");
+    worksheet.addRow([username, phone, messenger, ...answers]).commit();
 
-  const fileName = "Participants.xlsx";
-  await workbook.xlsx.writeFile(fileName);
+    for (let i = 0; i < COLUMNS_COUNT; i++) {
+      worksheet.getColumn(i + 1).width = 25;
+    }
 
-  res.sendFile(fileName, { root: path.resolve() });
-  // res.send("Hello World123");
+    await workbook.xlsx.writeFile(filePath);
+
+    res.sendFile(filePath, { root: path.resolve() });
+  } catch (e) {
+    console.log(e, "error");
+  }
 });
 
 https.createServer(httpsOptions, app).listen(3000, () => {
