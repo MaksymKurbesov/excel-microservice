@@ -47,20 +47,15 @@ app.post("/add-users", async (req, res) => {
     }
 
     await workbook.xlsx.writeFile(filePath);
-
-    // res.download(filePath, "updatedFile.xlsx", (err) => {
-    //   if (err) {
-    //     console.error("Ошибка при отправке файла:", err);
-    //     res.status(500).send("Ошибка при отправке файла");
-    //   } else {
-    //
-    //   }
-    // });
-
-    res.status(200).sendFile(filePath, { root: path.resolve() });
+    res.status(200).json({ message: "Пользователь успешно добавлен" });
   } catch (e) {
     console.log(e, "error");
   }
+});
+
+app.get("/download-sheet", (req, res) => {
+  const filePath = "Participants.xlsx";
+  res.status(200).sendFile(filePath, { root: path.resolve() });
 });
 
 https.createServer(httpsOptions, app).listen(3000, () => {
