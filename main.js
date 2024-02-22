@@ -23,12 +23,16 @@ app.post("/add-users", async (req, res) => {
   const workbook = new Excel.Workbook();
   const { username, phone, messenger, answers } = req.body;
 
+  console.log(req.body, "req.body");
+
   try {
     await workbook.xlsx.readFile(filePath);
     const worksheet =
       workbook.getWorksheet("Participants") ||
       workbook.addWorksheet("Participants");
-    worksheet.addRow([username, phone, messenger, ...answers]).commit();
+    worksheet
+      .addRow([username, phone, messenger, ...Object.values(answers)])
+      .commit();
 
     for (let i = 0; i < COLUMNS_COUNT; i++) {
       worksheet.getColumn(i + 1).width = 25;
@@ -37,6 +41,7 @@ app.post("/add-users", async (req, res) => {
     await workbook.xlsx.writeFile(filePath);
 
     res.sendFile(filePath, { root: path.resolve() });
+    // res.send("test");
   } catch (e) {
     console.log(e, "error");
   }
