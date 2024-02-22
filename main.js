@@ -21,7 +21,7 @@ const httpsOptions = {
 app.post("/add-users", async (req, res) => {
   const filePath = "Participants.xlsx";
   const workbook = new Excel.Workbook();
-  const { username, phone, messenger, answers } = req.body;
+  const { name, phone, messenger, answers } = req.body;
 
   console.log(req.body, "req.body");
 
@@ -31,7 +31,7 @@ app.post("/add-users", async (req, res) => {
       workbook.getWorksheet("Participants") ||
       workbook.addWorksheet("Participants");
     worksheet
-      .addRow([username, phone, messenger, ...Object.values(answers)])
+      .addRow([name, phone, messenger, ...Object.values(answers)])
       .commit();
 
     for (let i = 0; i < COLUMNS_COUNT; i++) {
@@ -40,8 +40,15 @@ app.post("/add-users", async (req, res) => {
 
     await workbook.xlsx.writeFile(filePath);
 
+    res.download(filePath, "updatedFile.xlsx", (err) => {
+      if (err) {
+        console.error("Ошибка при отправке файла:", err);
+        res.status(500).send("Ошибка при отправке файла");
+      }
+    });
+
     res.sendFile(filePath, { root: path.resolve() });
-    // res.send("test");
+    res.status(200).json({ message: "Пользователь добавлен" });
   } catch (e) {
     console.log(e, "error");
   }
