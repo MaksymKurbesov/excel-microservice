@@ -58,6 +58,21 @@ app.get("/download-sheet", (req, res) => {
   res.status(200).sendFile(filePath, { root: path.resolve() });
 });
 
+app.get("/reset-sheet", async (req, res) => {
+  const filename = "Participants.xlsx";
+  const workbook = new Excel.Workbook();
+  await workbook.xlsx.readFile(filename); // Загрузка существующего файла Excel
+  // const worksheet = workbook.getWorksheet("Participants");
+
+  workbook.removeWorksheet("Participants");
+  workbook.addWorksheet("Participants");
+
+  // worksheet.spliceRows(2, 100);
+
+  await workbook.xlsx.writeFile(filename);
+  res.status(200).json({ message: "Таблица успешно очищена." });
+});
+
 https.createServer(httpsOptions, app).listen(3000, () => {
   console.log("listen2");
 });
